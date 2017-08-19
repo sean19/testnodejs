@@ -1,16 +1,26 @@
 {
   "name": "testts",
   "version": "1.0.0",
-  "description": "这是一个测试",
+  "description": "",
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^8.0.23",
-    "@types/ws": "^3.0.2"
+    "@types/express": "^4.0.36",
+    "@types/node": "^8.0.24",
+    "@types/ws": "^3.0.2",
+    "typescript": "^2.4.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "sean",
-  "license": "ISC"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sean19/testnodejs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sean19/testnodejs/issues"
+  },
+  "homepage": "https://github.com/sean19/testnodejs#readme"
 }

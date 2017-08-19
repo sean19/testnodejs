@@ -1,54 +1,53 @@
 import {Server} from "ws";
 import {IncomingMessage} from "http";
-import {isNull} from "util";
+
+import {ArrDispose} from "../core/ArrDispose";
+import {IItem} from "../core/IItem";
 import {SocketClient} from "./SocketClient";
 
-export class SocketServer
-{
-    private _server:Server ;
-    private _port:number;
-    private  _arrClients:SocketClient[] = [];
-    constructor (pid:number)
-    {
-        this._port = pid;
-        this._server = new Server({'port':this._port});
-    }
+    /*
+    处理socket
+    * */
+     export class SocketServer extends ArrDispose implements IItem {
+        public getid(): number {
+            return this._port;
+        }
 
-    get port():number
-    {
-        return this._port;
-    }
+        private _port: number = 0;
+        private _server: Server;
 
-    public  startServer():void
-    {
-        console.log('start server : '+this._port);
-        this._server.addListener('connection',this.onListen.bind( this ));
-    }
-    private onListen(client: WebSocket, request:IncomingMessage):void
-    {
-        console.log('connect') // window Main
-    }
-    public dispose():void
-    {
-        if( !isNull(this._server))
-        {
-            this._server.removeListener('connection',this.onListen.bind( this ));
-            try {
-                this._server.close();
-            }catch (e)
-            {
+        constructor(pid: number) {
+            super();
+            this._port = pid;
+            this._server = new Server({'port': this._port});
+            this.startServer();
+        }
 
+        get port(): number {
+            return this._port;
+        }
+        public startServer(): void {
+            console.log('start server : ' + this._port);
+            this._server.addListener('connection', this.onListen.bind(this));
+        }
+        protected onListen(client: WebSocket, request: IncomingMessage): void {
+            console.log('connect') // window Main
+
+            this.addItem(new SocketClient(client));
+        }
+
+        public dispose(): void {
+            super.dispose();
+            if (null != this._server) {
+                this._server.removeListener('connection', this.onListen.bind(this));
+                try {
+                    this._server.close();
+                } catch (e) {
+
+                }
+                this._server = <any>null;
             }
-            this._server = <any>null;
         }
+
     }
-    protected clearClients():void
-    {
-        for(var i:number=0;i<this._arrClients.length;i++)
-        {
-            var client:SocketClient = this._arrClients[i];
-            client.dispose();
-        }
-        this._arrClients = [];
-    }
-}
+

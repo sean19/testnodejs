@@ -1,35 +1,32 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const ArrDispose_1 = require("../core/ArrDispose");
 const SocketServer_1 = require("./SocketServer");
-class SocketManager {
+const SocketServerMain_1 = require("./SocketServerMain");
+/*
+处理socket
+* */
+class SocketManager extends ArrDispose_1.ArrDispose {
     constructor() {
+        super(...arguments);
         this.portid = 8085;
-        this.arrserver = [];
+        this.portid_main = 7000;
+    }
+    initServerMain() {
+        this.server_main = new SocketServerMain_1.SocketServerMain(this.portid_main);
+    }
+    stopServerMain() {
+        if (this.server_main != null) {
+            this.server_main.dispose();
+            this.server_main = null;
+        }
     }
     addServer() {
         this.portid++;
-        var server = new SocketServer_1.SocketServer(this.portid);
-        server.startServer();
-        this.arrserver.push(server);
+        this.addItem(new SocketServer_1.SocketServer(this.portid));
     }
-    removeServer(serverid) {
-        for (var i = 0; i < this.arrserver.length; i++) {
-            var server = this.arrserver[i];
-            if (server.port == serverid) {
-                server.dispose();
-                this.arrserver.splice(i, 1);
-                return;
-            }
-        }
-    }
-    getServer(serverid) {
-        for (var i = 0; i < this.arrserver.length; i++) {
-            var server = this.arrserver[i];
-            if (server.port == serverid) {
-                return server;
-            }
-        }
-        return null;
+    clear() {
+        this.stopServerMain();
     }
 }
 exports.SocketManager = SocketManager;

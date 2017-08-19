@@ -1,12 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const ws_1 = require("ws");
-const util_1 = require("util");
-class SocketServer {
+const ArrDispose_1 = require("../core/ArrDispose");
+const SocketClient_1 = require("./SocketClient");
+/*
+处理socket
+* */
+class SocketServer extends ArrDispose_1.ArrDispose {
     constructor(pid) {
-        this._arrClients = [];
+        super();
+        this._port = 0;
         this._port = pid;
         this._server = new ws_1.Server({ 'port': this._port });
+        this.startServer();
+    }
+    getid() {
+        return this._port;
     }
     get port() {
         return this._port;
@@ -17,9 +26,11 @@ class SocketServer {
     }
     onListen(client, request) {
         console.log('connect'); // window Main
+        this.addItem(new SocketClient_1.SocketClient(client));
     }
     dispose() {
-        if (!util_1.isNull(this._server)) {
+        super.dispose();
+        if (null != this._server) {
             this._server.removeListener('connection', this.onListen.bind(this));
             try {
                 this._server.close();
@@ -28,13 +39,6 @@ class SocketServer {
             }
             this._server = null;
         }
-    }
-    clearClients() {
-        for (var i = 0; i < this._arrClients.length; i++) {
-            var client = this._arrClients[i];
-            client.dispose();
-        }
-        this._arrClients = [];
     }
 }
 exports.SocketServer = SocketServer;

@@ -1,40 +1,31 @@
+import {ArrDispose} from "../core/ArrDispose";
 import {SocketServer} from "./SocketServer";
-
-export class SocketManager
-{
-    private portid:number = 8085;
-    private arrserver:SocketServer[] = [];
-    public addServer():void
-    {
-        this.portid ++;
-        var server:SocketServer = new SocketServer(this.portid);
-        server.startServer();
-        this.arrserver.push(server);
-    }
-    public removeServer(serverid:number):void
-    {
-        for(var i:number = 0;i<this.arrserver.length;i++)
+import {SocketServerMain} from "./SocketServerMain";
+    /*
+    处理socket
+    * */
+    export class SocketManager extends ArrDispose {
+        private portid: number = 8085;
+        private portid_main:number = 7000;
+        private server_main:SocketServerMain;
+        public initServerMain():void
         {
-            var server:SocketServer = this.arrserver[i];
-            if(server.port == serverid)
+            this.server_main = new SocketServerMain(this.portid_main);
+        }
+        public stopServerMain():void
+        {
+            if(this.server_main!=null)
             {
-                server.dispose();
-                this.arrserver.splice( i,1);
-                return;
+                this.server_main.dispose();
+                this.server_main = <any>null;
             }
         }
-
-    }
-    public getServer(serverid:number):SocketServer
-    {
-        for(var i:number = 0;i<this.arrserver.length;i++)
-        {
-            var server:SocketServer = this.arrserver[i];
-            if(server.port == serverid)
-            {
-                return server;
-            }
+        public addServer(): void {
+            this.portid++;
+            this.addItem(new SocketServer(this.portid));
         }
-        return <any>null;
+        protected clear():void
+        {
+            this.stopServerMain();
+        }
     }
-}
